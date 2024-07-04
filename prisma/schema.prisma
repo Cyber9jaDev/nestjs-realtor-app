@@ -8,18 +8,21 @@ datasource db {
 }
 
 model Home {
-  id                      Int         @id       @default(autoincrement())
+  id                      Int @id @default(autoincrement())
   address                 String
   number_of_bedrooms      Int  
   number_of_bathrooms     Float
   city                    String
-  listed_date             DateTime              @default(now()) 
+  listed_date             DateTime @default(now()) 
   price                   Float
   land_size               Float
   propertyType            PropertyType    
-  created_at              DateTime              @default(now())
-  updated                 DateTime              @updatedAt
+  created_at              DateTime @default(now())
+  updated                 DateTime @updatedAt
   images                  Image[]
+  realtor_id              Int
+  realtor                 User @relation(fields: [realtor_id], references: [id])
+  messages                Message[]
 }
 
 model Image {
@@ -39,12 +42,15 @@ model User {
   password              String
   created_at            DateTime                @default(now())
   updated_at            DateTime                @updatedAt
-  user_type             UserType          
+  user_type             UserType
+  homes                 Home[]      
 }
 
 model Message {
-  id                    Int        @id          @default(autoincrement())
+  id                    Int @id  @default(autoincrement())
   message               String
+  home_id               Int
+  home                  Home @relation(fields: [home_id], references: [id])
 }
 
 enum PropertyType {

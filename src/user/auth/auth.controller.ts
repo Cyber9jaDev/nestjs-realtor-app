@@ -8,7 +8,7 @@ export class AuthController {
 
     @Post('/signup')
     signUp(@Body() body:SignUpDto){
-      this.authService.signUp();
+      this.authService.signUp(body);
   }
 
 }

@@ -40,14 +40,7 @@ export class AuthService {
       },
     });
 
-    const token = await jwt.sign({
-      name,
-      id: user.id
-    }, process.env.JWT_KEY, {
-      expiresIn: process.env.JWT_LIFETIME
-    })
-
-    return token;
+    return this.generateJWT(name, user.id);
   }
 
   async signIn ({ email, password }: SignInParams){
@@ -64,7 +57,18 @@ export class AuthService {
     const isValidPassword = await bcrypt.compare(password, hashedPassword);
 
     if(!isValidPassword){
-
+      throw new HttpException("Invalid Credentials", 400);
     }
+
+    return this.generateJWT(user.name, user.id);
+
+  }
+
+  private generateJWT(name: string, id: number) {
+    return jwt.sign(
+      { name, id }, 
+      process.env.JWT_KEY, 
+      { expiresIn: process.env.JWT_LIFETIME}
+    );
   }
 }

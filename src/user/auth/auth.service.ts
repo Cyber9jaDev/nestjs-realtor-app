@@ -20,7 +20,7 @@ interface SignInParams {
 export class AuthService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async signUp({ email, password, name, phone }: SignUpParams) {
+  async signUp({ email, password, name, phone }: SignUpParams, userType: UserType) {
     const userExists = await this.databaseService.user.findUnique({
       where: { email },
     });
@@ -37,7 +37,7 @@ export class AuthService {
         email,
         phone,
         password: hashedPassword,
-        user_type: "ADMIN",
+        user_type: userType,
       },
     });
 

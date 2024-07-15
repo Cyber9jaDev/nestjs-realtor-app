@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto, SignUpDto } from '../dtos/auth.dto';
+import { GenerateProductKeyDto, SignInDto, SignUpDto } from '../dtos/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,4 +16,9 @@ export class AuthController {
     return this.authService.signIn(body);
   }
 
+  @Post('/key')
+  generateProductKey(@Body() { email, userType}: GenerateProductKeyDto){
+    return this.authService.generateProductKey(email, userType);
+  }
+  
 }

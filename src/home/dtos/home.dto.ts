@@ -14,6 +14,9 @@ export class HomeResponseDto{
   city: string;
   propertyType: PropertyType;
 
+  // Destructure home in the home.service.ts file in the getHomes method
+  image: string
+
   @Exclude() updated: Date;
   @Exclude() created_at: Date;
   @Exclude() realtor_id: number

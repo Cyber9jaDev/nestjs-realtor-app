@@ -1,12 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { HomeResponseDto } from './dtos/home.dto';
+import { PropertyType } from '@prisma/client';
+
+interface FilterQueries {
+  city? : string;
+  price? : {
+    gte? : number
+    lte? : number
+  };
+  propertyType? : PropertyType;
+}
+
 
 @Injectable()
 export class HomeService {
   constructor(private readonly databaseService: DatabaseService){}
 
-  async getHomes(): Promise<HomeResponseDto[]>{
+  async getHomes(filters : FilterQueries): Promise<HomeResponseDto[]>{
+    
     const homes = await this.databaseService.home.findMany({
       select: {
         id: true,
@@ -22,10 +34,11 @@ export class HomeService {
           },
           take: 1
         }
-      }
+      },
+      where:{ ...filters }
     });
 
-    return homes.map((home) => new HomeResponseDto(home));
+    // return homes.map((home) => new HomeResponseDto(home));
 
     // Destructure images directly
     // return homes.map((home) => new HomeResponseDto({ ...home, image: home.images[0].url}));

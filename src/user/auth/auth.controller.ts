@@ -14,7 +14,8 @@ export class AuthController {
     @Param('userType', new ParseEnumPipe(UserType)) userType: UserType
   ) {
 
-    // In order to signup as a REALTOR, a key is needed from the ADMIN
+    // In order to signup as a REALTOR, 
+    // a key is needed from the ADMIN
     if(userType !== UserType.BUYER){
       if(!body.productKey){
         throw new UnauthorizedException()

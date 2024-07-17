@@ -55,7 +55,7 @@ export class HomeService {
         propertyType,
         realtor_id: 5
       }
-    })
+    });
 
     // Create Images for the home
     await this.databaseService.image.createMany({
@@ -69,6 +69,7 @@ export class HomeService {
 
     return new HomeResponseDto(home);
   }
+
 }
 
 

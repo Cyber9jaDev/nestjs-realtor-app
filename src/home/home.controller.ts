@@ -16,15 +16,20 @@ export class HomeController {
   ): Promise<HomeResponseDto[]>{
 
 
-    const price = parseFloat(minPrice) && parseFloat(maxPrice) ? {
-      gte: parseFloat(minPrice),
-      lte: parseFloat(maxPrice)
+    // const price = parseFloat(minPrice) && parseFloat(maxPrice) ? {
+    //   gte: parseFloat(minPrice),
+    //   lte: parseFloat(maxPrice)
+    // } : undefined;
+
+    const price = minPrice || maxPrice ? {
+      ...(minPrice && { gte: parseFloat(minPrice) }),
+      ...(maxPrice && { lte: parseFloat(maxPrice) }),
     } : undefined;
     
     const filters = {
-      city: city ? city : undefined,
-      price: price,
-      propertyType: propertyType ? propertyType : undefined,
+      ...(city && { city }),
+      ...(price && { price }),
+      ...(propertyType && { propertyType })
     }
     
     return this.homeService.getHomes(filters);

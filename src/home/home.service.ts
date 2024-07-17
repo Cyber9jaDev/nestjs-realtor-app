@@ -35,7 +35,7 @@ export class HomeService {
           take: 1
         }
       },
-      where:{ ...filters }
+      where: { ...filters }
     });
 
     // return homes.map((home) => new HomeResponseDto(home));

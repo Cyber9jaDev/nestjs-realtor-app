@@ -8,13 +8,11 @@ datasource db {
 }
 
 
-
 model Image {
   id                      Int       @id         @default(autoincrement())
   url                     String
   created_at              DateTime  @default(now())
   updated                 DateTime  @updatedAt
-
   home                    Home      @relation(fields: [home_id], references: [id])             
   home_id                 Int 
 }

@@ -1,23 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { HomeResponseDto } from './dtos/home.dto';
-import { PropertyType } from '@prisma/client';
-
-interface FilterQueries {
-  city? : string;
-  price? : {
-    gte? : number
-    lte? : number
-  };
-  propertyType? : PropertyType;
-}
-
+import { CreateHomeParams, FilterQueries } from './types/home.types';
 
 @Injectable()
 export class HomeService {
   constructor(private readonly databaseService: DatabaseService){}
 
-  async getHomes(filters : FilterQueries): Promise<HomeResponseDto[]>{
+  async getHomes(filter : FilterQueries): Promise<HomeResponseDto[]>{
     
     const homes = await this.databaseService.home.findMany({
       select: {
@@ -35,20 +25,50 @@ export class HomeService {
           take: 1
         }
       },
-      where: { ...filters }
+      where: { ...filter }
     });
 
-    // return homes.map((home) => new HomeResponseDto(home));
+    if(!homes.length){
+      throw new NotFoundException()
+    }
 
-    // Destructure images directly
-    // return homes.map((home) => new HomeResponseDto({ ...home, image: home.images[0].url}));
-    
+    return homes.map((home) => new HomeResponseDto(home));
+
     // Since we are sending only the first image, 
     // remove images and send only the first image in the array of images
-    return homes.map((home) => {
-      const fetchedHome = { ...home, image: home.images[0].url };
-      delete fetchedHome.images;
-      return new HomeResponseDto(fetchedHome);
+    // return homes.map((home) => {
+    //   const fetchedHome = { ...home, image: home.images[0].url };
+    //   delete fetchedHome.images;
+    //   return new HomeResponseDto(fetchedHome);
+    // });
+  }
+
+  async createHome ({address, numberOfBathrooms, numberOfBedrooms, city, landSize, propertyType, price, images }: CreateHomeParams){
+    const home = await this.databaseService.home.create({
+      data: {
+        address,
+        number_of_bedrooms: numberOfBathrooms,
+        number_of_bathrooms: numberOfBedrooms,
+        city,
+        land_size: landSize,
+        price,
+        propertyType,
+        realtor_id: 5
+      }
+    })
+
+    // Create Images for the home
+    await this.databaseService.image.createMany({
+      data: images.map((image) => {
+        return {
+          ...image, 
+          home_id: home.id
+        }
+      })
     });
+
+    return new HomeResponseDto(home);
   }
 }
+
+

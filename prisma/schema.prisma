@@ -73,6 +73,7 @@ enum PropertyType {
   CONDO
 }
 
+
 enum UserType {
   BUYER
   REALTOR

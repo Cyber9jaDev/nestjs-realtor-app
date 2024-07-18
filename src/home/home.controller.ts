@@ -1,55 +1,66 @@
-import { Body, Controller, Delete, Get, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { HomeService } from './home.service';
-import { createHomeDto, HomeResponseDto } from './dtos/home.dto';
+import { createHomeDto, HomeResponseDto, UpdateHomeDto } from './dtos/home.dto';
 import { PropertyType } from '@prisma/client';
 
 @Controller('home')
 export class HomeController {
-  constructor(private readonly homeService:HomeService){}
-  
+  constructor(private readonly homeService: HomeService) {}
+
   @Get()
   getHomes(
     @Query('city') city?: string,
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
     @Query('propertyType') propertyType?: PropertyType,
-  ): Promise<HomeResponseDto[]>{
-
-    const price = minPrice || maxPrice ? {
-      ...(minPrice && { gte: parseFloat(minPrice) }),
-      ...(maxPrice && { lte: parseFloat(maxPrice) }),
-    } : undefined;
-    
+  ): Promise<HomeResponseDto[]> {
+    const price =
+      minPrice || maxPrice
+        ? {
+            ...(minPrice && { gte: parseFloat(minPrice) }),
+            ...(maxPrice && { lte: parseFloat(maxPrice) }),
+          }
+        : undefined;
 
     const filter = {
       ...(city && { city }),
       ...(price && { price }),
-      ...(propertyType && { propertyType })
-    }
-    
+      ...(propertyType && { propertyType }),
+    };
+
     return this.homeService.getHomes(filter);
   }
 
   @Get(':id')
-  getHome(){
-    return {}
+  getHome() {
+    return {};
   }
 
   @Post()
-  createHome(
-    @Body() body: createHomeDto,
+  createHome(@Body() body: createHomeDto) {
+    return this.homeService.createHome(body);
+  }
+
+  @Put(':id')
+  updateHome(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateHomeDto : UpdateHomeDto
   ){
-    return this.homeService.createHome(body)
+    return this.homeService.updateHomeById(id, updateHomeDto)
   }
 
-  @Put(":id")
-  updateHome(){
-    return {}
+  @Delete(':id')
+  deleteHome() {
+    return {};
   }
-
-  @Delete(":id")
-  deleteHome(){
-    return {}
-  }
-
 }

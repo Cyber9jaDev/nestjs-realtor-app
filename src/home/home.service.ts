@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { HomeResponseDto } from './dtos/home.dto';
-import { CreateHomeParams, FilterQueries } from './types/home.types';
+import { CreateHomeParams, FilterQueries, UpdateHomeParams } from './types/home.types';
 
 @Injectable()
 export class HomeService {
@@ -65,6 +65,21 @@ export class HomeService {
           home_id: home.id
         }
       })
+    });
+
+    return new HomeResponseDto(home);
+  }
+
+  async updateHomeById (id: number, data: UpdateHomeParams){
+    const home = await this.databaseService.home.findUnique({
+      where: { id }
+    });
+    if(!home){
+      throw new NotFoundException();
+    }
+    const updatedHome = await this.databaseService.home.update({
+      where: { id },
+      data: { ...data }
     });
 
     return new HomeResponseDto(home);

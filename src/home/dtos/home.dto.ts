@@ -91,3 +91,8 @@ export class createHomeDto {
   @Type(() => Image)
   images: Image[]
 }
+
+
+export class UpdateHomeDto {
+  
+}

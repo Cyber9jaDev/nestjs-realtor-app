@@ -31,3 +31,4 @@ export interface UpdateHomeParams{
   landSize? : number;
   propertyType? : PropertyType;
 }
+

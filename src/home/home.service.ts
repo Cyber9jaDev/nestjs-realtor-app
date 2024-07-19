@@ -1,14 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { HomeResponseDto } from './dtos/home.dto';
-import { CreateHomeParams, FilterQueries, UpdateHomeParams } from './types/home.types';
+import {
+  CreateHomeParams,
+  FilterQueries,
+  UpdateHomeParams,
+} from './types/home.types';
 
 @Injectable()
 export class HomeService {
-  constructor(private readonly databaseService: DatabaseService){}
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  async getHomes(filter : FilterQueries): Promise<HomeResponseDto[]>{
-    
+  async getHomes(filter: FilterQueries): Promise<HomeResponseDto[]> {
     const homes = await this.databaseService.home.findMany({
       select: {
         id: true,
@@ -20,21 +23,21 @@ export class HomeService {
         number_of_bathrooms: true,
         images: {
           select: {
-            url: true
+            url: true,
           },
-          take: 1
-        }
+          take: 1,
+        },
       },
-      where: { ...filter }
+      where: { ...filter },
     });
 
-    if(!homes.length){
-      throw new NotFoundException()
+    if (!homes.length) {
+      throw new NotFoundException();
     }
 
     return homes.map((home) => new HomeResponseDto(home));
 
-    // Since we are sending only the first image, 
+    // Since we are sending only the first image,
     // remove images and send only the first image in the array of images
     // return homes.map((home) => {
     //   const fetchedHome = { ...home, image: home.images[0].url };
@@ -43,7 +46,16 @@ export class HomeService {
     // });
   }
 
-  async createHome ({address, numberOfBathrooms, numberOfBedrooms, city, landSize, propertyType, price, images }: CreateHomeParams){
+  async createHome({
+    address,
+    numberOfBathrooms,
+    numberOfBedrooms,
+    city,
+    landSize,
+    propertyType,
+    price,
+    images,
+  }: CreateHomeParams) {
     const home = await this.databaseService.home.create({
       data: {
         address,
@@ -53,38 +65,50 @@ export class HomeService {
         land_size: landSize,
         price,
         propertyType,
-        realtor_id: 5
-      }
+        realtor_id: 5,
+      },
     });
 
     // Create Images for the home
     await this.databaseService.image.createMany({
       data: images.map((image) => {
         return {
-          ...image, 
-          home_id: home.id
-        }
-      })
+          ...image,
+          home_id: home.id,
+        };
+      }),
     });
 
     return new HomeResponseDto(home);
   }
 
-  async updateHomeById (id: number, data: UpdateHomeParams){
+  async updateHomeById(id: number, data: UpdateHomeParams) {
     const home = await this.databaseService.home.findUnique({
-      where: { id }
+      where: { id },
     });
-    if(!home){
+    if (!home) {
       throw new NotFoundException();
     }
     const updatedHome = await this.databaseService.home.update({
       where: { id },
-      data: { ...data }
+      data: { ...data },
     });
 
-    return new HomeResponseDto(home);
+    return new HomeResponseDto(updatedHome);
   }
 
+  async deleteHomeById(id: number){
+    await this.databaseService.image.deleteMany({
+      where: { home_id: id }
+    });
+
+    const home = await this.databaseService.home.delete({
+      where: { id }
+    })
+
+    if(!home){
+      throw new  NotFoundException();
+    }
+    return new HomeResponseDto(home)
+  }
 }
-
-

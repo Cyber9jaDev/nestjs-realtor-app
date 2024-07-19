@@ -1,6 +1,6 @@
 import { PropertyType } from "@prisma/client";
 import { Exclude, Expose, Type } from "class-transformer";
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsPositive, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
 
 // In order to use this INTERCEPTOR/TRANSFORMER, we need to modify the home.module.ts provider
 // providers: [HomeService, { 
@@ -94,5 +94,38 @@ export class createHomeDto {
 
 
 export class UpdateHomeDto {
-  
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  address?: string;
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  numberOfBedrooms?: number;  
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  numberOfBathrooms?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  city?: string;
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  price?: number;
+
+  @IsNumber()
+  @IsPositive()
+
+  @IsOptional()
+  landSize?: number;
+
+  @IsEnum(PropertyType)
+  @IsOptional()
+  propertyType?: PropertyType;    
 }

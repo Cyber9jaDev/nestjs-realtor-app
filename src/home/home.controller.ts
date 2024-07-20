@@ -8,10 +8,13 @@ import {
   Post,
   Put,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { HomeService } from './home.service';
 import { createHomeDto, HomeResponseDto, UpdateHomeDto } from './dtos/home.dto';
 import { PropertyType } from '@prisma/client';
+import { User } from 'src/user/decorators/user.decorator';
+import { UserEntity } from 'src/user/types/user.type';
 
 @Controller('home')
 export class HomeController {
@@ -46,21 +49,35 @@ export class HomeController {
     return {};
   }
 
+  // @User is a custom decorator
   @Post()
-  createHome(@Body() body: createHomeDto) {
-    return this.homeService.createHome(body);
+  createHome(@Body() createHomeDto: createHomeDto, @User() user: UserEntity) {
+    return this.homeService.createHome(user.id, createHomeDto);
   }
 
   @Put(':id')
-  updateHome(
+  async updateHome(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateHomeDto : UpdateHomeDto
-  ){
-    return this.homeService.updateHomeById(id, updateHomeDto)
+    @Body() updateHomeDto: UpdateHomeDto,
+    @User() user: UserEntity,
+  ) {
+    const realtor = await this.homeService.getRealtorByHomeId(id);
+    if (realtor.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+    return this.homeService.updateHomeById(id, updateHomeDto);
   }
 
   @Delete(':id')
-  deleteHomeById(@Param('id', ParseIntPipe) id: number) {
+  async deleteHomeById(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserEntity
+  ) {
+    // Ensure only the person that created a home can delete a certain home
+    const realtor = await this.homeService.getRealtorByHomeId(id);
+    if(realtor.id !== user.id){
+      throw new UnauthorizedException()
+    }
     return this.homeService.deleteHomeById(id);
   }
 }

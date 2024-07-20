@@ -46,7 +46,7 @@ export class HomeService {
     // });
   }
 
-  async createHome({
+  async createHome(userId: number, {
     address,
     numberOfBathrooms,
     numberOfBedrooms,
@@ -65,7 +65,7 @@ export class HomeService {
         land_size: landSize,
         price,
         propertyType,
-        realtor_id: 5,
+        realtor_id: userId,
       },
     });
 
@@ -108,7 +108,29 @@ export class HomeService {
 
     if(!home){
       throw new  NotFoundException();
-    }
+    }   
     return new HomeResponseDto(home)
+  }
+
+  async getRealtorByHomeId (id: number){
+    const home = await this.databaseService.home.findUnique({
+      where: { id },
+      select: {
+        realtor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        }
+      }
+    });
+
+    if (!home) {
+      throw new NotFoundException();
+    }
+
+    return home.realtor;
   }
 }

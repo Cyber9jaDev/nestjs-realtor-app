@@ -9,12 +9,15 @@ import {
   Put,
   Query,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { HomeService } from './home.service';
 import { createHomeDto, HomeResponseDto, UpdateHomeDto } from './dtos/home.dto';
-import { PropertyType } from '@prisma/client';
+import { PropertyType, UserType } from '@prisma/client';
 import { User } from 'src/user/decorators/user.decorator';
 import { UserEntity } from 'src/user/types/user.type';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @Controller('home')
 export class HomeController {
@@ -49,10 +52,12 @@ export class HomeController {
     return {};
   }
 
-  // @User is a custom decorator
+  @Roles(UserType.REALTOR, UserType.ADMIN)
+  @UseGuards(AuthGuard)
   @Post()
   createHome(@Body() createHomeDto: createHomeDto, @User() user: UserEntity) {
-    return this.homeService.createHome(user.id, createHomeDto);
+    return 'Created Home';
+    // return this.homeService.createHome(user.id, createHomeDto);
   }
 
   @Put(':id')
@@ -75,6 +80,7 @@ export class HomeController {
   ) {
     // Ensure only the person that created a home can delete a certain home
     const realtor = await this.homeService.getRealtorByHomeId(id);
+    
     if(realtor.id !== user.id){
       throw new UnauthorizedException()
     }

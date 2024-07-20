@@ -1,8 +1,10 @@
-import { Body, Controller, Param, ParseEnumPipe, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseEnumPipe, Post, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GenerateProductKeyDto, SignInDto, SignUpDto } from '../dtos/auth.dto';
 import { UserType } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { UserEntity } from '../types/user.type';
+import { User } from '../decorators/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -38,8 +40,16 @@ export class AuthController {
     return this.authService.signIn(body);
   }
 
+  // Generate a key before  user can sign up
   @Post('/key')
   generateProductKey(@Body() { email, userType }: GenerateProductKeyDto) {
     return this.authService.generateProductKey(email, userType);
   }
+
+  // Identify who the user is
+  @Get('/me')
+  me( @User() user: UserEntity ){
+    return user
+  }
+
 }

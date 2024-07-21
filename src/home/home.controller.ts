@@ -50,13 +50,16 @@ export class HomeController {
     return {};
   }
 
-  @Roles(UserType.REALTOR)  
+  @Roles(UserType.REALTOR)
   @Post()
-  createHome(@Body() createHomeDto: createHomeDto, @User() user: UserEntity) {
+  createHome(
+    @Body() createHomeDto: createHomeDto, 
+    @User() user: UserEntity
+  ) {
     return this.homeService.createHome(user.id, createHomeDto);
   }
 
-  @Roles(UserType.REALTOR)  
+  @Roles(UserType.REALTOR)
   @Put(':id')
   async updateHome(
     @Param('id', ParseIntPipe) id: number,
@@ -70,7 +73,7 @@ export class HomeController {
     return this.homeService.updateHomeById(id, updateHomeDto);
   }
 
-  @Roles(UserType.REALTOR)  
+  @Roles(UserType.REALTOR)
   @Delete(':id')
   async deleteHomeById(
     @Param('id', ParseIntPipe) id: number,

@@ -46,7 +46,7 @@ export class AuthController {
     return this.authService.generateProductKey(email, userType);
   } 
 
-  // Identify who the user  
+  // Identify the user  
   @Get('/me')
   me( @User() user: UserEntity ){ 
     return user

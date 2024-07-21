@@ -52,7 +52,7 @@ export class HomeController {
     return {};
   }
 
-  @Roles(UserType.REALTOR, UserType.ADMIN)
+  @Roles(UserType.REALTOR, UserType.ADMIN)  
   @UseGuards(AuthGuard)
   @Post()
   createHome(@Body() createHomeDto: createHomeDto, @User() user: UserEntity) {
@@ -76,13 +76,13 @@ export class HomeController {
   @Delete(':id')
   async deleteHomeById(
     @Param('id', ParseIntPipe) id: number,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ) {
     // Ensure only the person that created a home can delete a certain home
     const realtor = await this.homeService.getRealtorByHomeId(id);
-    
-    if(realtor.id !== user.id){
-      throw new UnauthorizedException()
+
+    if (realtor.id !== user.id) {
+      throw new UnauthorizedException();
     }
     return this.homeService.deleteHomeById(id);
   }

@@ -36,19 +36,19 @@ export class AuthController {
   }
 
   @Post('/signin')
-  signIn(@Body() body: SignInDto) {
+  signIn(@Body() body: SignInDto) { 
     return this.authService.signIn(body);
   }
 
-  // Generate a key before  user can sign up
+  // Generate a key before user can sign up
   @Post('/key')
   generateProductKey(@Body() { email, userType }: GenerateProductKeyDto) {
     return this.authService.generateProductKey(email, userType);
-  }
+  } 
 
-  // Identify who the user 
+  // Identify who the user  
   @Get('/me')
-  me( @User() user: UserEntity ){
+  me( @User() user: UserEntity ){ 
     return user
   }
 

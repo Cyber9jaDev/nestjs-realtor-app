@@ -1,5 +1,4 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import * as jwt from 'jsonwebtoken';
 
 export class UserInterceptor implements NestInterceptor {
@@ -7,6 +6,7 @@ export class UserInterceptor implements NestInterceptor {
     context: ExecutionContext,
     handler: CallHandler,
   ){
+    
     // Extract the token from the request headers
     const request = context.switchToHttp().getRequest();
     const token = request?.headers?.authorization?.split(' ')[1];

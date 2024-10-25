@@ -6,6 +6,7 @@ import {
   FilterQueries,
   UpdateHomeParams,
 } from './types/home.types';
+import { UserEntity } from 'src/user/types/user.type';
 
 @Injectable()
 export class HomeService {
@@ -46,16 +47,19 @@ export class HomeService {
     // });
   }
 
-  async createHome(userId: number, {
-    address,
-    numberOfBathrooms,
-    numberOfBedrooms,
-    city,
-    landSize,
-    propertyType,
-    price,
-    images,
-  }: CreateHomeParams) {
+  async createHome(
+    userId: number,
+    {
+      address,
+      numberOfBathrooms,
+      numberOfBedrooms,
+      city,
+      landSize,
+      propertyType,
+      price,
+      images,
+    }: CreateHomeParams,
+  ) {
     const home = await this.databaseService.home.create({
       data: {
         address,
@@ -97,22 +101,22 @@ export class HomeService {
     return new HomeResponseDto(updatedHome);
   }
 
-  async deleteHomeById(id: number){
+  async deleteHomeById(id: number) {
     await this.databaseService.image.deleteMany({
-      where: { home_id: id }
+      where: { home_id: id },
     });
 
     const home = await this.databaseService.home.delete({
-      where: { id }
-    })
+      where: { id },
+    });
 
-    if(!home){
-      throw new  NotFoundException();
-    }   
-    return new HomeResponseDto(home)
+    if (!home) {
+      throw new NotFoundException();
+    }
+    return new HomeResponseDto(home);
   }
 
-  async getRealtorByHomeId (id: number){
+  async getRealtorByHomeId(id: number) {
     const home = await this.databaseService.home.findUnique({
       where: { id },
       select: {
@@ -123,8 +127,8 @@ export class HomeService {
             email: true,
             phone: true,
           },
-        }
-      }
+        },
+      },
     });
 
     if (!home) {
@@ -132,5 +136,34 @@ export class HomeService {
     }
 
     return home.realtor;
+  }
+
+  async inquire(buyer: UserEntity, homeId: number, message: string) {
+    const realtor = await this.getRealtorByHomeId(homeId);
+
+    return await this.databaseService.message.create({
+      data: {
+        message,
+        buyer_id: buyer.id,
+        realtor_id: realtor.id,
+        home_id: homeId,
+      },
+    });
+  }
+
+  async getHomeMessages(homeId: number) {
+    return this.databaseService.message.findMany({
+      where: { home_id: homeId },
+      select: {
+        message: true,
+        buyer: {
+          select: {
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+      },
+    });
   }
 }

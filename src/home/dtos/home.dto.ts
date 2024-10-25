@@ -121,7 +121,6 @@ export class UpdateHomeDto {
 
   @IsNumber()
   @IsPositive()
-
   @IsOptional()
   landSize?: number;
 
@@ -129,3 +128,9 @@ export class UpdateHomeDto {
   @IsOptional()
   propertyType?: PropertyType;    
 }
+export class InquireDto{
+  @IsString()
+  @IsNotEmpty()
+  message: string;
+}
+

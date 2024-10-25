@@ -3,11 +3,11 @@ import { Reflector } from '@nestjs/core';
 import * as jwt from 'jsonwebtoken';
 import { DatabaseService } from '../database/database.service';
 
-interface JWTPayload{
+interface JWTPayload {
   name: string;
   id: number;
   iat: number;
-  exp: number
+  exp: number;
 }
 
 // Reflector allows us to access metadata
@@ -21,7 +21,6 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    
     // 1. Determine What user types(roles) are able to execute the endpoint that is being called
     const roles = this.reflector.getAllAndOverride('roles', [
       context.getHandler(),
@@ -35,16 +34,18 @@ export class AuthGuard implements CanActivate {
 
       try {
         const payload = jwt.verify(token, process.env.JWT_KEY) as JWTPayload;
-        
-        const user = await this.databaseService.user.findUnique({ where: { id: payload?.id}})
+
+        // Make a request to the database to get the user
+        const user = await this.databaseService.user.findUnique({
+          where: { id: payload ?.id },
+        });
 
         // 3. Determine if the user is a Buyer, Admin or Realtor by making a Database request to get user by id
-        if(!user) return false;
+        if (!user) return false;
         // 4. Determine if the user has permission
-        if(roles.includes(user.user_type)) return true;
+        if (roles.includes(user.user_type)) return true;
 
         return false;
-
       } catch (error) {
         return false;
       }

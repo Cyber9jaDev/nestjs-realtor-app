@@ -8,6 +8,16 @@ import {
 } from './types/home.types';
 import { UserEntity } from 'src/user/types/user.type';
 
+const homeSelect = {
+  id: true,
+  address: true,
+  city: true,
+  price: true,
+  propertyType: true,
+  number_of_bedrooms: true,
+  number_of_bathrooms: true,
+}
+
 @Injectable()
 export class HomeService {
   constructor(private readonly databaseService: DatabaseService) {}
@@ -15,13 +25,7 @@ export class HomeService {
   async getHomes(filter: FilterQueries): Promise<HomeResponseDto[]> {
     const homes = await this.databaseService.home.findMany({
       select: {
-        id: true,
-        address: true,
-        city: true,
-        price: true,
-        propertyType: true,
-        number_of_bedrooms: true,
-        number_of_bathrooms: true,
+        ...homeSelect,
         images: {
           select: {
             url: true,

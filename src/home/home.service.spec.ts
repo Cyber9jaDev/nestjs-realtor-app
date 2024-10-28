@@ -1,18 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HomeService } from './home.service';
+import { DatabaseService } from 'src/database/database.service';
 
 describe('HomeService', () => {
-  let service: HomeService;
+  let homeService: HomeService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HomeService],
+      providers: [HomeService, DatabaseService],
     }).compile();
 
-    service = module.get<HomeService>(HomeService);
+    homeService = module.get<HomeService>(HomeService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(homeService).toBeDefined();
   });
 });

@@ -8,7 +8,7 @@ import {
 } from './types/home.types';
 import { UserEntity } from 'src/user/types/user.type';
 
-const homeSelect = {
+export const homeSelect = {
   id: true,
   address: true,
   city: true,

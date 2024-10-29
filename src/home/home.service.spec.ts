@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { homeSelect, HomeService } from './home.service';
 import { DatabaseService } from 'src/database/database.service';
 import { PropertyType } from '@prisma/client';
+import { NotFoundException } from '@nestjs/common';
 
 const mockGetHomes = [
   {
@@ -18,8 +19,8 @@ const mockGetHomes = [
 ];
 
 describe('HomeService', () => {
-  let service: HomeService;
-  let dataBaseService: DatabaseService;
+  let homeService: HomeService;
+  let databaseService: DatabaseService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -36,8 +37,8 @@ describe('HomeService', () => {
       ],
     }).compile();
 
-    service = module.get<HomeService>(HomeService);
-    dataBaseService = module.get<DatabaseService>(DatabaseService);
+    homeService = module.get<HomeService>(HomeService);
+    databaseService = module.get<DatabaseService>(DatabaseService);
   });
 
   describe('getHomes', () => {
@@ -49,13 +50,14 @@ describe('HomeService', () => {
       },
       propertyType: PropertyType.RESIDENTIAL,
     };
+
     it('should call Database findMany with correct params to return an array of homes', async () => {
       // mock the return value of the findMany method
       const mockDatabaseFindManyHomes = jest.fn().mockReturnValue(mockGetHomes);
       jest
-        .spyOn(dataBaseService.home, 'findMany')
+        .spyOn(databaseService.home, 'findMany')
         .mockImplementation(mockDatabaseFindManyHomes);
-      await service.getHomes(filters);
+      await homeService.getHomes(filters);
 
       expect(mockDatabaseFindManyHomes).toHaveBeenCalledWith({
         where: { ...filters },
@@ -69,6 +71,16 @@ describe('HomeService', () => {
           },
         },
       });
+    });
+
+    it('should throw not found exception if no homes are found', async () => {
+      const mockDatabaseFindManyHomes = jest.fn().mockReturnValue([]);
+      jest
+        .spyOn(databaseService.home, 'findMany')
+        .mockImplementation(mockDatabaseFindManyHomes);
+      await expect(homeService.getHomes(filters)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

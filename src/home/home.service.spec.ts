@@ -32,7 +32,7 @@ const mockCreateHome = {
 
 const mockImages = [
   { id: 1, url: 'src1' },
-  { id: 2, url: 'src2' },
+  // { id: 2, url: 'src2' },
 ];
 
 describe('HomeService', () => {
@@ -137,11 +137,13 @@ describe('HomeService', () => {
       });
 
       // This tests for image creation
-      expect(databaseService.image.createMany).toHaveBeenCalledWith({
-        data: [{ url: 'img 1', home_id: 15 }],
-      });
+      // expect(databaseService.image.createMany).toHaveBeenCalledWith({
+      //   data: [{ url: 'img 1', home_id: 15 }],
+      // });
     });
 
+    // This tests for image creation.
+    // It is the same as the above test
     it('should ensure home images are also created', async () => {
       const mockCreateManyImages = jest.fn().mockReturnValue(mockImages);
       jest

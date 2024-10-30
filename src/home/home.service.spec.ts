@@ -30,7 +30,7 @@ const mockCreateHome = {
   land_size: 1000,
 };
 
-const mockCreateImages = [
+const mockImages = [
   { id: 1, url: 'src1' },
   { id: 2, url: 'src2' },
 ];
@@ -51,7 +51,7 @@ describe('HomeService', () => {
               create: jest.fn().mockReturnValue(mockCreateHome),
             },
             image: {
-              createMany: jest.fn().mockReturnValue(mockCreateImages),
+              createMany: jest.fn().mockReturnValue(mockImages),
             },
           },
         },
@@ -132,8 +132,24 @@ describe('HomeService', () => {
           number_of_bedrooms: 2,
           number_of_bathrooms: 2,
           land_size: 1000,
-          realtor_id: 5
+          realtor_id: 5,
         },
+      });
+
+      // This tests for image creation
+      expect(databaseService.image.createMany).toHaveBeenCalledWith({
+        data: [{ url: 'img 1', home_id: 15 }],
+      });
+    });
+
+    it('should ensure home images are also created', async () => {
+      const mockCreateManyImages = jest.fn().mockReturnValue(mockImages);
+      jest
+        .spyOn(databaseService.image, 'createMany')
+        .mockImplementation(mockCreateManyImages);
+      await homeService.createHome(15, mockCreateHomesParams);
+      expect(mockCreateManyImages).toHaveBeenCalledWith({
+        data: [{ url: 'img 1', home_id: 15 }],
       });
     });
   });

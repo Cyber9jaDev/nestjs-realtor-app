@@ -1,8 +1,8 @@
 {
-  "name": "nestjs-realtor-app",
+  "name": "realtor",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "A realtor app",
+  "author": "Ayodeji Oladapo Adewale",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

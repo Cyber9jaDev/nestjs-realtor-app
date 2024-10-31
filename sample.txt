@@ -81,3 +81,46 @@ enum UserType {
   REALTOR
   ADMIN
 }
+
+import { Test, TestingModule } from '@nestjs/testing';
+import { HomeController } from './home.controller';
+import { HomeService } from './home.service';
+import { DatabaseService } from 'src/database/database.service';
+
+describe('HomeController', () => {
+  let controller: HomeController;
+  let homeService: HomeService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [HomeController],
+      providers: [
+        DatabaseService,
+        {
+          provide: HomeService,
+          useValue: {
+            getHomes: jest.fn().mockReturnValue([]),
+          },
+        },
+      ],
+    }).compile();
+
+    controller = module.get<HomeController>(HomeController);
+    homeService = module.get<HomeService>(HomeService);
+  });
+
+  describe('getHomes', () => {
+    it('should construct filter object correctly', async () => {
+      const mockGetHomes = jest.fn().mockReturnValue([]);
+      jest.spyOn(homeService, 'getHomes').mockImplementation(mockGetHomes);
+      await controller.getHomes('Ibadan', '1500000');
+
+      expect(mockGetHomes).toHaveBeenCalledWith({
+        city: 'Ibadan',   //city
+        price: {
+          gte: 1500000   //minPrice
+        }
+      });
+    });
+  });
+});

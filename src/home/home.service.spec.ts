@@ -32,7 +32,6 @@ const mockCreateHome = {
 
 const mockImages = [
   { id: 1, url: 'src1' },
-  // { id: 2, url: 'src2' },
 ];
 
 describe('HomeService', () => {

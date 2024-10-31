@@ -77,15 +77,35 @@ describe('HomeController', () => {
 
     const mockUserEntity = {
       name: 'Oladapo',
-      id: 30,
-      iat: 12121,
-      exp: 121212,
+      id: 53,
+      iat: 1,
+      exp: 2,
     };
 
-    it("should throw unauthorized Error if realtor didn't create home ", async () => {
+    it("should throw unauthorized error if realtor didn't create home ", async () => {
       await expect(
         controller.updateHome(5, mockUpdateHomeParams, mockUserEntity),
       ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should update home if realtor is valid', async () => {
+      const mockGetRealtorByHomeId = jest.fn().mockReturnValue(mockUser);
+      jest
+        .spyOn(homeService, 'getRealtorByHomeId')
+        .mockImplementation(mockGetRealtorByHomeId);
+
+      const mockUpdateHome = jest.fn().mockReturnValue(mockHome);
+      jest
+        .spyOn(homeService, 'updateHomeById')
+        .mockImplementation(mockUpdateHome);
+
+      await controller.updateHome(5, mockUpdateHomeParams, {
+        id: 53,
+        ...mockUserEntity,
+      });
+
+      expect(mockGetRealtorByHomeId).toHaveBeenCalledWith(5);
+      expect(mockUpdateHome).toHaveBeenCalledWith(5, mockUpdateHomeParams);
     });
   });
 });

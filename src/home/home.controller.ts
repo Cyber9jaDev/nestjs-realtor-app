@@ -35,12 +35,8 @@ export class HomeController {
 
   @Get()
   @ApiOperation({ summary: 'Get all homes' })
-  @ApiResponse({
-    status: 200,
-    description: 'OK',
-    type: [HomeResponseDto],
-    isArray: true,
-  })
+  @ApiResponse({ status: 200, description: 'OK', type: [HomeResponseDto], isArray: true })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
   @ApiQuery({ name: 'city', required: false, type: String })
   @ApiQuery({ name: 'minPrice', required: false, type: String })
   @ApiQuery({ name: 'maxPrice', required: false, type: String })

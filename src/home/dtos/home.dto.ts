@@ -19,13 +19,26 @@ import {
 // }],
 
 export class HomeResponseDto {
+  @ApiProperty({ example: 1, description: 'The unique identifier of the home' })
   id: number;
+
+  @ApiProperty({ example: '111 Realtor Street' })
   address: string;
+
+  @ApiProperty({ example: 150000 })
   price: number;
+
+  @ApiProperty({ example: 'Maryland' })
   city: string;
+
+  @ApiProperty({
+    enum: ['CONDO', 'RESIDENTIAL'],
+    example: PropertyType.RESIDENTIAL,
+  })
   propertyType: PropertyType;
 
   // Destructure home in the home.service.ts file in the getHomes method
+  @ApiProperty({ example: 'https://picsum.photos/200/300' })
   image: string;
 
   @Exclude() updated: Date;
@@ -110,47 +123,53 @@ export class CreateHomeDto {
 }
 
 export class UpdateHomeDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: '111 Realtor Street' })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   address?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 3 })
   @IsNumber()
   @IsPositive()
   @IsOptional()
   numberOfBedrooms?: number;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 3 })
   @IsNumber()
   @IsPositive()
   @IsOptional()
   numberOfBathrooms?: number;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 'Maryland' })
   @IsString()
   @IsNotEmpty()
   @IsOptional()
   city?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 35000 })
   @IsNumber()
   @IsPositive()
   @IsOptional()
   price?: number;
 
-  @ApiPropertyOptional()
+
+  @ApiProperty({ example: 4000 })
   @IsNumber()
   @IsPositive()
   @IsOptional()
   landSize?: number;
 
+  @ApiPropertyOptional({
+    enum: ['RESIDENTIAL', 'CONDO'],
+    example: PropertyType.RESIDENTIAL,
+  })
   @ApiPropertyOptional()
   @IsEnum(PropertyType)
   @IsOptional()
   propertyType?: PropertyType;
 }
+
 export class InquireDto {
   @IsString()
   @IsNotEmpty()

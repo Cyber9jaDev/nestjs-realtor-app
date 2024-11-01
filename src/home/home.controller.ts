@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { HomeService } from './home.service';
 import {
-  createHomeDto,
+  CreateHomeDto,
   HomeResponseDto,
   InquireDto,
   UpdateHomeDto,
@@ -21,12 +21,30 @@ import { PropertyType, UserType } from '@prisma/client';
 import { User } from 'src/user/decorators/user.decorator';
 import { UserEntity } from 'src/user/types/user.type';
 import { Roles } from 'src/decorators/roles.decorator';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('home')
 export class HomeController {
   constructor(private readonly homeService: HomeService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Get all homes' })
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+    type: [HomeResponseDto],
+    isArray: true,
+  })
+  @ApiQuery({ name: 'city', required: false, type: String })
+  @ApiQuery({ name: 'minPrice', required: false, type: String })
+  @ApiQuery({ name: 'maxPrice', required: false, type: String })
+  @ApiQuery({ name: 'propertyType', required: false, enum: PropertyType })
   getHomes(
     @Query('city') city?: string,
     @Query('minPrice') minPrice?: string,
@@ -50,14 +68,21 @@ export class HomeController {
     return this.homeService.getHomes(filter);
   }
 
-  @Get(':id')
-  getHome() {
-    return {};
-  }
-
   @Roles(UserType.REALTOR)
   @Post()
-  createHome(@Body() createHomeDto: createHomeDto, @User() user: UserEntity) {
+  @ApiOperation({
+    summary: 'Create new home',
+    description:
+      'Creates a new home listing. Only accessible to users with REALTOR role.',
+  })
+  @ApiBody({ type: CreateHomeDto, description: 'Home details to create' })
+  @ApiResponse({ status: 200, description: 'Home created successfully' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - User does not have REALTOR role',
+  })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  createHome(@Body() createHomeDto: CreateHomeDto, @User() user: UserEntity) {
     return this.homeService.createHome(user.id, createHomeDto);
   }
 
